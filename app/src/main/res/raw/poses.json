@@ -1,0 +1,373 @@
+{
+  "yogaPoseList":[
+  {
+    "englishName": "Bharadvaja’s Twist",
+    "sanskritName": "Bharadvajasana I"
+  },
+  {
+    "englishName": "Big Toe Pose",
+    "sanskritName": "Padangusthasana"
+  },
+  {
+    "englishName": "Boat Pose",
+    "sanskritName": "Paripurna Navasana"
+  },
+  {
+    "englishName": "Bound Angle Pose",
+    "sanskritName": "Baddha Konasana"
+  },
+  {
+    "englishName": "Bow Pose",
+    "sanskritName": "Dhanurasana"
+  },
+  {
+    "englishName": "Bridge Pose",
+    "sanskritName": "Setu Bandha Sarvangasana"
+  },
+  {
+    "englishName": "Camel Pose",
+    "sanskritName": "Ustrasana"
+  },
+  {
+    "englishName": "Cat Pose",
+    "sanskritName": "Marjaryasana",
+    "Pose Type": "Core Yoga Poses"
+  },
+  {
+    "englishName": "Chair Pose",
+    "sanskritName": "Utkatasana"
+  },
+  {
+    "englishName": "Child’s Pose",
+    "sanskritName": "Balasana"
+  },
+  {
+    "englishName": "Cobra Pose",
+    "sanskritName": "Bhujangasana"
+  },
+  {
+    "englishName": "Corpse Pose",
+    "sanskritName": "Savasana"
+  },
+  {
+    "englishName": "Cow Face Pose",
+    "sanskritName": "Gomukhasana"
+  },
+  {
+    "englishName": "Cow Pose",
+    "sanskritName": "Bitilasana"
+  },
+  {
+    "englishName": "Crane (Crow) Pose",
+    "sanskritName": "Bakasana"
+  },
+  {
+    "englishName": "Dolphin Plank Pose",
+    "sanskritName": ""
+  },
+  {
+    "englishName": "Dolphin Pose",
+    "sanskritName": ""
+  },
+  {
+    "englishName": "Downward-Facing Dog",
+    "sanskritName": "Adho Mukha Svanasana"
+  },
+  {
+    "englishName": "Eagle Pose",
+    "sanskritName": "Garudasana"
+  },
+  {
+    "englishName": "Easy Pose",
+    "sanskritName": "Sukhasana"
+  },
+  {
+    "englishName": "Eight-Angle Pose",
+    "sanskritName": "Astavakrasana"
+  },
+  {
+    "englishName": "Extended Hand-To-Big-Toe Pose",
+    "sanskritName": "Utthita Hasta Padangustasana"
+  },
+  {
+    "englishName": "Extended Puppy Pose",
+    "sanskritName": "Uttana Shishosana"
+  },
+  {
+    "englishName": "Extended Side Angle Pose",
+    "sanskritName": "Utthita Parsvakonasana"
+  },
+  {
+    "englishName": "Extended Triangle Pose",
+    "sanskritName": "Utthita Trikonasana"
+  },
+  {
+    "englishName": "Feathered Peacock Pose",
+    "sanskritName": "Pincha Mayurasana"
+  },
+  {
+    "englishName": "Fire Log Pose",
+    "sanskritName": "Agnistambhasana"
+  },
+  {
+    "englishName": "Firefly Pose",
+    "sanskritName": "Tittibhasana"
+  },
+  {
+    "englishName": "Fish Pose",
+    "sanskritName": "Matsyasana"
+  },
+  {
+    "englishName": "Four-Limbed Staff Pose",
+    "sanskritName": "Chaturanga Dandasana"
+  },
+  {
+    "englishName": "Garland Pose",
+    "sanskritName": "Malasana"
+  },
+  {
+    "englishName": "Gate Pose",
+    "sanskritName": "Parighasana"
+  },
+  {
+    "englishName": "Half Frog Pose",
+    "sanskritName": "Ardha Bhekasana"
+  },
+  {
+    "englishName": "Half Lord of the Fishes Pose",
+    "sanskritName": "Ardha Matsyendrasana"
+  },
+  {
+    "englishName": "Half Moon Pose",
+    "sanskritName": "Ardha Chandrasana"
+  },
+  {
+    "englishName": "Handstand",
+    "sanskritName": "Adho Mukha Vrksasana"
+  },
+  {
+    "englishName": "Happy Baby Pose",
+    "sanskritName": "Ananda Balasana"
+  },
+  {
+    "englishName": "Head-to-Knee Forward Bend",
+    "sanskritName": "Janu Sirsasana"
+  },
+  {
+    "englishName": "Hero Pose",
+    "sanskritName": "Virasana"
+  },
+  {
+    "englishName": "Heron Pose",
+    "sanskritName": "Krounchasana"
+  },
+  {
+    "englishName": "High Lunge",
+    "sanskritName": ""
+  },
+  {
+    "englishName": "High Lunge, Crescent Variation",
+    "sanskritName": ""
+  },
+  {
+    "englishName": "Intense Side Stretch Pose",
+    "sanskritName": "Parsvottanasana"
+  },
+  {
+    "englishName": "Legs-Up-the-Wall Pose",
+    "sanskritName": "Viparita Karani"
+  },
+  {
+    "englishName": "Locust Pose",
+    "sanskritName": "Salabhasana"
+  },
+  {
+    "englishName": "Lord of the Dance Pose",
+    "sanskritName": "Natarajasana"
+  },
+  {
+    "englishName": "Lotus Pose",
+    "sanskritName": "Padmasana"
+  },
+  {
+    "englishName": "Low Lunge",
+    "sanskritName": "Anjaneyasana"
+  },
+  {
+    "englishName": "Marichi’s Pose",
+    "sanskritName": "Marichyasana III"
+  },
+  {
+    "englishName": "Monkey Pose",
+    "sanskritName": "Hanumanasana"
+  },
+  {
+    "englishName": "Mountain Pose",
+    "sanskritName": "Tadasana"
+  },
+  {
+    "englishName": "Noose Pose",
+    "sanskritName": "Pasasana"
+  },
+  {
+    "englishName": "One-Legged King Pigeon Pose",
+    "sanskritName": "Eka Pada Rajakapotasana"
+  },
+  {
+    "englishName": "One-Legged King Pigeon Pose II",
+    "sanskritName": "Eka Pada Rajakapotasana II"
+  },
+  {
+    "englishName": "Peacock Pose",
+    "sanskritName": "Mayurasana"
+  },
+  {
+    "englishName": "Pigeon Pose",
+    "sanskritName": "Kapotasana"
+  },
+  {
+    "englishName": "Plank Pose",
+    "sanskritName": ""
+  },
+  {
+    "englishName": "Plow Pose",
+    "sanskritName": "Halasana"
+  },
+  {
+    "englishName": "Pose Dedicated to the Sage Koundinya I",
+    "sanskritName": "Eka Pada Koundinyanasana I"
+  },
+  {
+    "englishName": "Pose Dedicated to the Sage Koundinya II",
+    "sanskritName": "Eka Pada Koundinyanasana II"
+  },
+  {
+    "englishName": "Pose Dedicated to the Sage Marichi I",
+    "sanskritName": "Marichyasana I"
+  },
+  {
+    "englishName": "Reclining Bound Angle Pose",
+    "sanskritName": "Supta Baddha Konasana"
+  },
+  {
+    "englishName": "Reclining Hand-to-Big-Toe Pose",
+    "sanskritName": "Supta Padangusthasana"
+  },
+  {
+    "englishName": "Reclining Hero Pose",
+    "sanskritName": "Supta Virasana"
+  },
+  {
+    "englishName": "Revolved Head-to-Knee Pose",
+    "sanskritName": "Parivrtta Janu Sirsasana"
+  },
+  {
+    "englishName": "Revolved Side Angle Pose",
+    "sanskritName": "Parivrtta Parsvakonasana"
+  },
+  {
+    "englishName": "Revolved Triangle Pose",
+    "sanskritName": "Parivrtta Trikonasana"
+  },
+  {
+    "englishName": "Scale Pose",
+    "sanskritName": "Tolasana"
+  },
+  {
+    "englishName": "Seated Forward Bend",
+    "sanskritName": "Paschimottanasana"
+  },
+  {
+    "englishName": "Shoulder-Pressing Pose",
+    "sanskritName": "Bhujapidasana"
+  },
+  {
+    "englishName": "Side Crane (Crow) Pose",
+    "sanskritName": "Parsva Bakasana"
+  },
+  {
+    "englishName": "Side Plank Pose",
+    "sanskritName": "Vasisthasana"
+  },
+  {
+    "englishName": "Side-Reclining Leg Lift",
+    "sanskritName": "Anantasana"
+  },
+  {
+    "englishName": "Sphinx Pose",
+    "sanskritName": ""
+  },
+  {
+    "englishName": "Staff Pose",
+    "sanskritName": "Dandasana"
+  },
+  {
+    "englishName": "Standing Forward Bend",
+    "sanskritName": "Uttanasana"
+  },
+  {
+    "englishName": "Standing Half Forward Bend",
+    "sanskritName": "Ardha Uttanasana"
+  },
+  {
+    "englishName": "Standing Split",
+    "sanskritName": "Urdhva Prasarita Eka Padasana"
+  },
+  {
+    "englishName": "Supported Headstand",
+    "sanskritName": "Salamba Sirsasana"
+  },
+  {
+    "englishName": "Supported Shoulderstand",
+    "sanskritName": "Salamba Sarvangasana"
+  },
+  {
+    "englishName": "Tree Pose",
+    "sanskritName": "Vrksasana"
+  },
+  {
+    "englishName": "Upward Bow (Wheel) Pose",
+    "sanskritName": "Urdhva Dhanurasana"
+  },
+  {
+    "englishName": "Upward Facing Two-Foot Staff Pose",
+    "sanskritName": "Dwi Pada Viparita Dandasana"
+  },
+  {
+    "englishName": "Upward Plank Pose",
+    "sanskritName": "Purvottanasana"
+  },
+  {
+    "englishName": "Upward Salute",
+    "sanskritName": "Urdhva Hastasana"
+  },
+  {
+    "englishName": "Upward-Facing Dog Pose",
+    "sanskritName": "Urdhva Mukha Svanasana"
+  },
+  {
+    "englishName": "Warrior I Pose",
+    "sanskritName": "Virabhadrasana I"
+  },
+  {
+    "englishName": "Warrior II Pose",
+    "sanskritName": "Virabhadrasana II"
+  },
+  {
+    "englishName": "Warrior III Pose",
+    "sanskritName": "Virabhadrasana III"
+  },
+  {
+    "englishName": "Wide-Angle Seated Forward Bend",
+    "sanskritName": "Upavistha Konasana"
+  },
+  {
+    "englishName": "Wide-Legged Forward Bend",
+    "sanskritName": "Prasarita Padottanasana"
+  },
+  {
+    "englishName": "Wild Thing",
+    "sanskritName": "Camatkarasana"
+  }
+]
+}
