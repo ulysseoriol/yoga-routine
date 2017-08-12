@@ -1,27 +1,17 @@
+
 package com.example.ulysse.myoga.Model;
 
-/**
- * Created by ulysse on 8/7/17.
- */
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
 public class Pose
 {
-    private String englishName;
-    private String sanskritName;
 
-    public void setEnglishName(String englishName)
-    {
-        this.englishName = englishName;
-    }
+    @SerializedName("englishName")
+    @Expose
+    public String englishName;
+    @SerializedName("sanskritName")
+    @Expose
+    public String sanskritName;
 
-    public void setSanskritName(String sanskritName)
-    {
-        this.sanskritName = sanskritName;
-    }
-
-    public String getEnglishName() { return englishName; }
-    public String getSanskritName()
-    {
-        return sanskritName;
-    }
 }

@@ -1,26 +1,22 @@
 package com.example.ulysse.myoga;
 
-import android.animation.LayoutTransition;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.example.ulysse.myoga.Model.ApiNetworkResponse;
 import com.example.ulysse.myoga.Model.Pose;
-import com.example.ulysse.myoga.Network.YogaPoseList;
-import com.google.gson.Gson;
+import com.example.ulysse.myoga.Network.IApiNetworkService;
+import com.example.ulysse.myoga.Utils.ApiUtils;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -33,6 +29,9 @@ import io.reactivex.functions.Cancellable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity
 {
@@ -40,7 +39,10 @@ public class MainActivity extends AppCompatActivity
     private RecyclerView recyclerView;
     private EditText queryEditText;
     private ProgressBar progressBar;
-    private YogaPoseList yogaPoseList;
+    private ApiNetworkResponse apiNetworkResponse;
+    private Toast emptyListToast;
+
+    private IApiNetworkService apiNetworkService;
 
 
     @Override
@@ -49,27 +51,23 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        InputStream inputStream = getResources().openRawResource(R.raw.poses);
-        Reader reader = new BufferedReader(new InputStreamReader(inputStream));
-        Gson gson = new Gson();
-        yogaPoseList = gson.fromJson(reader, YogaPoseList.class);
+        apiNetworkService = ApiUtils.createNetworkService();
+        getYogaPoseList();
 
         queryEditText = (EditText) findViewById(R.id.query_edit_text);
         progressBar = (ProgressBar) findViewById(R.id.progress_bar);
         recyclerView = (RecyclerView) findViewById(R.id.recyclerview);
 
         recyclerView.setLayoutManager(new GridLayoutManager(MainActivity.this, 3));
-        recyclerView.setAdapter(new YogaPoseAdapter(yogaPoseList.getYogaPoseList()));
+        recyclerView.setAdapter(new YogaPoseAdapter(Collections.EMPTY_LIST));
 
-        LayoutTransition layoutTransition = new LayoutTransition();
-        layoutTransition.enableTransitionType(LayoutTransition.CHANGING);
-        ViewGroup viewGroup = (ViewGroup) findViewById(R.id.activity_main);
-        viewGroup.setLayoutTransition(layoutTransition);
+        subscribeSearchObservable(createTextChangeObservable());
+        getYogaPoseList();
+    }
 
-
-        Observable<String> searchTextObservable = createTextChangeObservable();
-
-        searchTextObservable
+    private void subscribeSearchObservable(Observable<String> searchObservable)
+    {
+        searchObservable
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext(new Consumer<String>()
                 {
@@ -98,7 +96,37 @@ public class MainActivity extends AppCompatActivity
                         showResult(result);
                     }
                 });
+    }
 
+    public void getYogaPoseList()
+    {
+        apiNetworkService.getYogaPoseList().enqueue(new Callback<ApiNetworkResponse>()
+        {
+            @Override
+            public void onResponse(Call<ApiNetworkResponse> call, Response<ApiNetworkResponse> response)
+            {
+                if (response.isSuccessful())
+                {
+                    apiNetworkResponse = response.body();
+                    apiNetworkResponse.setYogaPoseList(apiNetworkResponse.getYogaPoseList());
+                    ((YogaPoseAdapter) recyclerView.getAdapter()).setYogaPoseList(apiNetworkResponse.getYogaPoseList());
+                    Log.d("MainActivity", "posts loaded from API");
+                }
+                else
+                {
+                    int statusCode = response.code();
+                    // handle request errors depending on status code
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ApiNetworkResponse> call, Throwable t)
+            {
+                Toast.makeText(getApplicationContext(), R.string.request_failed, Toast.LENGTH_SHORT).show();
+                Log.d("MainActivity", "error loading from API");
+
+            }
+        });
     }
 
     protected List<Pose> searchPose(String query)
@@ -106,19 +134,20 @@ public class MainActivity extends AppCompatActivity
         query = query.toLowerCase();
 
         List<Pose> result = new LinkedList<>();
-        List<Pose> baseList = yogaPoseList.getYogaPoseList();
+        List<Pose> baseList = apiNetworkResponse.getYogaPoseList();
 
         try
         {
             Thread.sleep(2000);
-        } catch (InterruptedException e)
+        }
+        catch (InterruptedException e)
         {
             e.printStackTrace();
         }
 
         for (int i = 0; i < baseList.size(); i++)
         {
-            if (baseList.get(i).getEnglishName().toLowerCase().contains(query))
+            if (baseList.get(i).englishName.toLowerCase().contains(query))
             {
                 result.add(baseList.get(i));
             }
@@ -131,9 +160,17 @@ public class MainActivity extends AppCompatActivity
     {
         if (result.isEmpty())
         {
-            Toast.makeText(this, R.string.search_nothing_found, Toast.LENGTH_SHORT).show();
+            if (emptyListToast.getView() == null)
+            {
+                emptyListToast = new Toast(this);
+                emptyListToast.setText(R.string.search_nothing_found);
+                emptyListToast.setDuration(Toast.LENGTH_SHORT);
+                emptyListToast.show();
+            }
+
             ((YogaPoseAdapter) recyclerView.getAdapter()).setYogaPoseList(Collections.EMPTY_LIST);
-        } else
+        }
+        else
         {
             ((YogaPoseAdapter) recyclerView.getAdapter()).setYogaPoseList(result);
         }
@@ -157,6 +194,7 @@ public class MainActivity extends AppCompatActivity
                     public void afterTextChanged(Editable s)
                     {
                     }
+
                     @Override
                     public void onTextChanged(CharSequence s, int start, int before, int count)
                     {

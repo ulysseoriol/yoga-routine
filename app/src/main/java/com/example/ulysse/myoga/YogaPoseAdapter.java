@@ -3,12 +3,10 @@ package com.example.ulysse.myoga;
 import android.databinding.DataBindingUtil;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.ulysse.myoga.Model.Pose;
 import com.example.ulysse.myoga.databinding.GridviewItemBinding;
-
 
 import java.util.List;
 
@@ -65,7 +63,7 @@ public class YogaPoseAdapter extends RecyclerView.Adapter<YogaPoseAdapter.Bindin
 
         public void bind(Pose pose)
         {
-            binding.setVariable(BR.pose, pose);
+            binding.setVariable(com.example.ulysse.myoga.BR.pose, pose);
             binding.executePendingBindings();
         }
     }
