@@ -16,6 +16,7 @@ import com.example.ulysse.myoga.Model.ApiNetworkResponse;
 import com.example.ulysse.myoga.Model.Pose;
 import com.example.ulysse.myoga.Network.IApiNetworkService;
 import com.example.ulysse.myoga.Utils.ApiUtils;
+import com.example.ulysse.myoga.Utils.SingleToast;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -39,9 +40,8 @@ public class MainActivity extends AppCompatActivity
     private RecyclerView recyclerView;
     private EditText queryEditText;
     private ProgressBar progressBar;
-    private ApiNetworkResponse apiNetworkResponse;
-    private Toast emptyListToast;
 
+    private ApiNetworkResponse apiNetworkResponse;
     private IApiNetworkService apiNetworkService;
 
 
@@ -108,7 +108,6 @@ public class MainActivity extends AppCompatActivity
                 if (response.isSuccessful())
                 {
                     apiNetworkResponse = response.body();
-                    apiNetworkResponse.setYogaPoseList(apiNetworkResponse.getYogaPoseList());
                     ((YogaPoseAdapter) recyclerView.getAdapter()).setYogaPoseList(apiNetworkResponse.getYogaPoseList());
                     Log.d("MainActivity", "posts loaded from API");
                 }
@@ -122,7 +121,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onFailure(Call<ApiNetworkResponse> call, Throwable t)
             {
-                Toast.makeText(getApplicationContext(), R.string.request_failed, Toast.LENGTH_SHORT).show();
+                SingleToast.show(getApplicationContext(), R.string.request_failed, Toast.LENGTH_SHORT);
                 Log.d("MainActivity", "error loading from API");
 
             }
@@ -138,7 +137,7 @@ public class MainActivity extends AppCompatActivity
 
         try
         {
-            Thread.sleep(2000);
+            Thread.sleep(1000);
         }
         catch (InterruptedException e)
         {
@@ -160,14 +159,7 @@ public class MainActivity extends AppCompatActivity
     {
         if (result.isEmpty())
         {
-            if (emptyListToast.getView() == null)
-            {
-                emptyListToast = new Toast(this);
-                emptyListToast.setText(R.string.search_nothing_found);
-                emptyListToast.setDuration(Toast.LENGTH_SHORT);
-                emptyListToast.show();
-            }
-
+             SingleToast.show(this, R.string.search_nothing_found, Toast.LENGTH_SHORT);
             ((YogaPoseAdapter) recyclerView.getAdapter()).setYogaPoseList(Collections.EMPTY_LIST);
         }
         else
