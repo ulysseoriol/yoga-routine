@@ -63,7 +63,7 @@ public class YogaPoseAdapter extends RecyclerView.Adapter<YogaPoseAdapter.Bindin
 
         public void bind(Pose pose)
         {
-            binding.setVariable(com.example.ulysse.myoga.BR.pose, pose);
+            binding.setVariable(BR.pose, pose);
             binding.executePendingBindings();
         }
     }

@@ -4,8 +4,6 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -14,35 +12,34 @@ import android.widget.Toast;
 
 import com.example.ulysse.myoga.Model.ApiNetworkResponse;
 import com.example.ulysse.myoga.Model.Pose;
-import com.example.ulysse.myoga.Network.IApiNetworkService;
+import com.example.ulysse.myoga.Network.NetworkService;
 import com.example.ulysse.myoga.Utils.ApiUtils;
 import com.example.ulysse.myoga.Utils.SingleToast;
+import com.jakewharton.rxbinding2.widget.RxTextView;
 
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
+import java.util.Observable;
 
-import io.reactivex.Observable;
-import io.reactivex.ObservableEmitter;
-import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.functions.Cancellable;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+
 
 public class MainActivity extends AppCompatActivity
 {
+    private final int GRID_COLUMN_NUMBER = 3;
 
     private RecyclerView recyclerView;
     private EditText queryEditText;
     private ProgressBar progressBar;
 
+    private NetworkService networkService;
     private ApiNetworkResponse apiNetworkResponse;
-    private IApiNetworkService apiNetworkService;
+
+    private Disposable textViewDisposable;
 
 
     @Override
@@ -51,39 +48,77 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        apiNetworkService = ApiUtils.createNetworkService();
-        getYogaPoseList();
+        networkService = new NetworkService(ApiUtils.createNetworkService());
 
         queryEditText = (EditText) findViewById(R.id.query_edit_text);
         progressBar = (ProgressBar) findViewById(R.id.progress_bar);
         recyclerView = (RecyclerView) findViewById(R.id.recyclerview);
 
-        recyclerView.setLayoutManager(new GridLayoutManager(MainActivity.this, 3));
-        recyclerView.setAdapter(new YogaPoseAdapter(Collections.EMPTY_LIST));
-
-        subscribeSearchObservable(createTextChangeObservable());
+        recyclerView.setLayoutManager(new GridLayoutManager(MainActivity.this, GRID_COLUMN_NUMBER));
         getYogaPoseList();
     }
 
-    private void subscribeSearchObservable(Observable<String> searchObservable)
+    public void getYogaPoseList()
     {
-        searchObservable
+        networkService.getYogaPoseList(new NetworkService.GetYogaPoseListCallback()
+        {
+            @Override
+            public void onSuccess(ApiNetworkResponse yogaPoseListResponse)
+            {
+//                try
+//                {
+//                    Thread.sleep(4000);
+//                }
+//                catch (InterruptedException e)
+//                {
+//                    e.printStackTrace();
+//                }
+                apiNetworkResponse = yogaPoseListResponse;
+                recyclerView.setAdapter(new YogaPoseAdapter(yogaPoseListResponse.getYogaPoseList()));
+                subscribeTextViewObservable();
+                Log.d("MainActivity", "posts loaded from API");
+            }
+
+            @Override
+            public void onError(Throwable networkError)
+            {
+                SingleToast.show(getApplicationContext(), R.string.request_failed, Toast.LENGTH_SHORT);
+                Log.d("MainActivity", "error loading posts from API");
+            }
+
+        });
+    }
+
+
+    protected void showResult(List<Pose> result)
+    {
+        if (result.isEmpty())
+        {
+            SingleToast.show(this, R.string.search_nothing_found, Toast.LENGTH_SHORT);
+        }
+        ((YogaPoseAdapter) recyclerView.getAdapter()).setYogaPoseList(result);
+    }
+
+    private void subscribeTextViewObservable()
+    {
+        textViewDisposable = RxTextView.textChanges(queryEditText)
+                .skipInitialValue()
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext(new Consumer<String>()
+                .doOnNext(new Consumer<CharSequence>()
                 {
                     @Override
-                    public void accept(String s) throws Exception
+                    public void accept(CharSequence s) throws Exception
                     {
                         progressBar.setVisibility(View.VISIBLE);
                     }
                 })
                 .observeOn(Schedulers.io())
-                .map(new Function<String, List<Pose>>()
+                .map(new Function<CharSequence, List<Pose>>()
                 {
                     @Override
-                    public List<Pose> apply(String query) throws Exception
+                    public List<Pose> apply(CharSequence query) throws Exception
                     {
-                        return searchPose(query);
+                        return apiNetworkResponse.searchPose(query.toString());
                     }
                 })
                 .observeOn(AndroidSchedulers.mainThread())
@@ -98,111 +133,40 @@ public class MainActivity extends AppCompatActivity
                 });
     }
 
-    public void getYogaPoseList()
+    @Override
+    protected void onDestroy()
     {
-        apiNetworkService.getYogaPoseList().enqueue(new Callback<ApiNetworkResponse>()
+        super.onDestroy();
+
+        if (textViewDisposable != null)
         {
-            @Override
-            public void onResponse(Call<ApiNetworkResponse> call, Response<ApiNetworkResponse> response)
-            {
-                if (response.isSuccessful())
-                {
-                    apiNetworkResponse = response.body();
-                    ((YogaPoseAdapter) recyclerView.getAdapter()).setYogaPoseList(apiNetworkResponse.getYogaPoseList());
-                    Log.d("MainActivity", "posts loaded from API");
-                }
-                else
-                {
-                    int statusCode = response.code();
-                    // handle request errors depending on status code
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ApiNetworkResponse> call, Throwable t)
-            {
-                SingleToast.show(getApplicationContext(), R.string.request_failed, Toast.LENGTH_SHORT);
-                Log.d("MainActivity", "error loading from API");
-
-            }
-        });
-    }
-
-    protected List<Pose> searchPose(String query)
-    {
-        query = query.toLowerCase();
-
-        List<Pose> result = new LinkedList<>();
-        List<Pose> baseList = apiNetworkResponse.getYogaPoseList();
-
-        try
-        {
-            Thread.sleep(1000);
-        }
-        catch (InterruptedException e)
-        {
-            e.printStackTrace();
-        }
-
-        for (int i = 0; i < baseList.size(); i++)
-        {
-            if (baseList.get(i).englishName.toLowerCase().contains(query))
-            {
-                result.add(baseList.get(i));
-            }
-        }
-
-        return result;
-    }
-
-    protected void showResult(List<Pose> result)
-    {
-        if (result.isEmpty())
-        {
-             SingleToast.show(this, R.string.search_nothing_found, Toast.LENGTH_SHORT);
-            ((YogaPoseAdapter) recyclerView.getAdapter()).setYogaPoseList(Collections.EMPTY_LIST);
-        }
-        else
-        {
-            ((YogaPoseAdapter) recyclerView.getAdapter()).setYogaPoseList(result);
+            textViewDisposable.dispose();
         }
     }
 
-    private Observable<String> createTextChangeObservable()
-    {
-        return Observable.create(new ObservableOnSubscribe<String>()
-        {
-            @Override
-            public void subscribe(final ObservableEmitter<String> emitter) throws Exception
-            {
-                final TextWatcher watcher = new TextWatcher()
-                {
-                    @Override
-                    public void beforeTextChanged(CharSequence s, int start, int count, int after)
-                    {
-                    }
-
-                    @Override
-                    public void afterTextChanged(Editable s)
-                    {
-                    }
-
-                    @Override
-                    public void onTextChanged(CharSequence s, int start, int before, int count)
-                    {
-                        emitter.onNext(s.toString());
-                    }
-                };
-                queryEditText.addTextChangedListener(watcher);
-                emitter.setCancellable(new Cancellable()
-                {
-                    @Override
-                    public void cancel() throws Exception
-                    {
-                        queryEditText.removeTextChangedListener(watcher);
-                    }
-                });
-            }
-        });
-    }
+//    //Save recyclerview's state
+//    public final static String LIST_STATE_KEY = "recycler_list_state";
+//    Parcelable listState;
+//
+//    protected void onSaveInstanceState(Bundle state) {
+//        super.onSaveInstanceState(state);
+//        // Save list state
+//        listState = mLayoutManager.onSaveInstanceState();
+//        state.putParcelable(LIST_STATE_KEY, listState);
+//    }
+//
+//    protected void onRestoreInstanceState(Bundle state) {
+//        super.onRestoreInstanceState(state);
+//        // Retrieve list state and list/item positions
+//        if(state != null)
+//            listState = state.getParcelable(LIST_STATE_KEY);
+//    }
+//
+//    @Override
+//    protected void onResume() {
+//        super.onResume();
+//        if (listState != null) {
+//            mLayoutManager.onRestoreInstanceState(listState);
+//        }
+//    }
 }

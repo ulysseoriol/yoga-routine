@@ -1,6 +1,7 @@
 package com.example.ulysse.myoga.Utils;
 
 import android.content.Context;
+import android.support.annotation.StringRes;
 import android.widget.Toast;
 
 /**
@@ -11,7 +12,7 @@ public class SingleToast {
 
     private static Toast mToast;
 
-    public static void show(Context context, int resId, int duration)
+    public static void show(Context context, @StringRes int resId, int duration)
     {
         if (mToast != null)
         {
