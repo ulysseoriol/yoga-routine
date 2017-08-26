@@ -21,13 +21,21 @@ public class NetworkService
 
     public void getYogaPoseList(final GetYogaPoseListCallback callback)
     {
-        networkAPIInterface.getYogaPoseList().enqueue(new Callback<ApiNetworkResponse>()
+        networkAPIInterface.getYogaPoseListRequest().enqueue(new Callback<ApiNetworkResponse>()
         {
             @Override
             public void onResponse(Call<ApiNetworkResponse> call, Response<ApiNetworkResponse> response)
             {
                 if (response.isSuccessful())
                 {
+//                    try
+//                    {
+//                        Thread.sleep(2000);
+//                    }
+//                    catch (InterruptedException e)
+//                    {
+//                        e.printStackTrace();
+//                    }
                     callback.onSuccess(response.body());
                 }
                 else

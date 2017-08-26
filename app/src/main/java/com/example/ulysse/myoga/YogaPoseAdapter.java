@@ -45,6 +45,11 @@ public class YogaPoseAdapter extends RecyclerView.Adapter<YogaPoseAdapter.Bindin
         holder.bind(pose);
     }
 
+    public List<Pose> getYogaPoseList()
+    {
+        return yogaPoseList;
+    }
+
     public void setYogaPoseList(List<Pose> yogaPoseList)
     {
         this.yogaPoseList = yogaPoseList;
@@ -63,7 +68,7 @@ public class YogaPoseAdapter extends RecyclerView.Adapter<YogaPoseAdapter.Bindin
 
         public void bind(Pose pose)
         {
-            binding.setVariable(BR.pose, pose);
+            binding.setVariable(com.example.ulysse.myoga.BR.pose, pose);
             binding.executePendingBindings();
         }
     }

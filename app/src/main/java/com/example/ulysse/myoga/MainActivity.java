@@ -1,6 +1,7 @@
 package com.example.ulysse.myoga;
 
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -17,9 +18,8 @@ import com.example.ulysse.myoga.Utils.ApiUtils;
 import com.example.ulysse.myoga.Utils.SingleToast;
 import com.jakewharton.rxbinding2.widget.RxTextView;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.Observable;
+import java.util.concurrent.TimeUnit;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
@@ -30,11 +30,14 @@ import io.reactivex.schedulers.Schedulers;
 
 public class MainActivity extends AppCompatActivity
 {
-    private final int GRID_COLUMN_NUMBER = 3;
+    private final static String LIST_STATE_KEY = "recycler_list_state";
+    private final static String LIST_PARCEL_KEY = "recycler_list_parcel";
+    private final static int GRID_COLUMN_NUMBER = 3;
+    private final static int USER_INPUT_TIME_DELAY = 500;
 
     private RecyclerView recyclerView;
     private EditText queryEditText;
-    private ProgressBar progressBar;
+    private ProgressBar searchProgressBar;
 
     private NetworkService networkService;
     private ApiNetworkResponse apiNetworkResponse;
@@ -48,16 +51,44 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        networkService = new NetworkService(ApiUtils.createNetworkService());
-
-        queryEditText = (EditText) findViewById(R.id.query_edit_text);
-        progressBar = (ProgressBar) findViewById(R.id.progress_bar);
+        queryEditText = (EditText) findViewById(R.id.search_edit_text);
+        searchProgressBar = (ProgressBar) findViewById(R.id.search_progress_bar);
         recyclerView = (RecyclerView) findViewById(R.id.recyclerview);
-
         recyclerView.setLayoutManager(new GridLayoutManager(MainActivity.this, GRID_COLUMN_NUMBER));
-        getYogaPoseList();
+
+        if(savedInstanceState == null)
+        {
+            networkService = new NetworkService(ApiUtils.createNetworkService());
+            getYogaPoseList();
+        }
+        else
+        {
+            ApiNetworkResponse savedRecyclerListState = savedInstanceState.getParcelable(LIST_PARCEL_KEY);
+            recyclerView.setAdapter(new YogaPoseAdapter(savedRecyclerListState.getYogaPoseList()));
+        }
     }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState)
+    {
+        super.onSaveInstanceState(outState);
+        ApiNetworkResponse currentListItems = new ApiNetworkResponse(
+                ((YogaPoseAdapter)recyclerView.getAdapter()).getYogaPoseList());
+
+        outState.putParcelable(LIST_PARCEL_KEY, currentListItems);
+        outState.putParcelable(LIST_STATE_KEY, recyclerView.getLayoutManager().onSaveInstanceState());
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState)
+    {
+        super.onRestoreInstanceState(savedInstanceState);
+
+        Parcelable savedRecyclerLayoutState = savedInstanceState.getParcelable(LIST_STATE_KEY);
+        recyclerView.getLayoutManager().onRestoreInstanceState(savedRecyclerLayoutState);
+    }
+
+    //TODO: Display progressbar while loading
     public void getYogaPoseList()
     {
         networkService.getYogaPoseList(new NetworkService.GetYogaPoseListCallback()
@@ -65,15 +96,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onSuccess(ApiNetworkResponse yogaPoseListResponse)
             {
-//                try
-//                {
-//                    Thread.sleep(4000);
-//                }
-//                catch (InterruptedException e)
-//                {
-//                    e.printStackTrace();
-//                }
-                apiNetworkResponse = yogaPoseListResponse;
+                apiNetworkResponse = yogaPoseListResponse; //Keep a reference for search
                 recyclerView.setAdapter(new YogaPoseAdapter(yogaPoseListResponse.getYogaPoseList()));
                 subscribeTextViewObservable();
                 Log.d("MainActivity", "posts loaded from API");
@@ -103,13 +126,14 @@ public class MainActivity extends AppCompatActivity
     {
         textViewDisposable = RxTextView.textChanges(queryEditText)
                 .skipInitialValue()
+                .debounce(USER_INPUT_TIME_DELAY, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext(new Consumer<CharSequence>()
                 {
                     @Override
                     public void accept(CharSequence s) throws Exception
                     {
-                        progressBar.setVisibility(View.VISIBLE);
+                        searchProgressBar.setVisibility(View.VISIBLE);
                     }
                 })
                 .observeOn(Schedulers.io())
@@ -127,7 +151,7 @@ public class MainActivity extends AppCompatActivity
                     @Override
                     public void accept(List<Pose> result) throws Exception
                     {
-                        progressBar.setVisibility(View.GONE);
+                        searchProgressBar.setVisibility(View.GONE);
                         showResult(result);
                     }
                 });
@@ -143,30 +167,4 @@ public class MainActivity extends AppCompatActivity
             textViewDisposable.dispose();
         }
     }
-
-//    //Save recyclerview's state
-//    public final static String LIST_STATE_KEY = "recycler_list_state";
-//    Parcelable listState;
-//
-//    protected void onSaveInstanceState(Bundle state) {
-//        super.onSaveInstanceState(state);
-//        // Save list state
-//        listState = mLayoutManager.onSaveInstanceState();
-//        state.putParcelable(LIST_STATE_KEY, listState);
-//    }
-//
-//    protected void onRestoreInstanceState(Bundle state) {
-//        super.onRestoreInstanceState(state);
-//        // Retrieve list state and list/item positions
-//        if(state != null)
-//            listState = state.getParcelable(LIST_STATE_KEY);
-//    }
-//
-//    @Override
-//    protected void onResume() {
-//        super.onResume();
-//        if (listState != null) {
-//            mLayoutManager.onRestoreInstanceState(listState);
-//        }
-//    }
 }

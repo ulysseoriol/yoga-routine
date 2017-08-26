@@ -8,7 +8,8 @@ import android.widget.Toast;
  * Created by ulysse on 8/12/17.
  */
 
-public class SingleToast {
+public class SingleToast
+{
 
     private static Toast mToast;
 

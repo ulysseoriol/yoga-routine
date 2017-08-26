@@ -1,16 +1,18 @@
-
 package com.example.ulysse.myoga.Model;
 
-import java.util.LinkedList;
-import java.util.List;
-import com.google.gson.annotations.Expose;
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.SerializedName;
 
-public class ApiNetworkResponse {
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
+public class ApiNetworkResponse implements Parcelable
+{
     @SerializedName("yogaPoseList")
-    @Expose
-    public List<Pose> yogaPoseList;
+    private List<Pose> yogaPoseList;
 
     public List<Pose> getYogaPoseList()
     {
@@ -43,4 +45,42 @@ public class ApiNetworkResponse {
 
         return result;
     }
+
+    public ApiNetworkResponse (List<Pose> yogaPoseList)
+    {
+        this.yogaPoseList = yogaPoseList;
+    }
+
+    ApiNetworkResponse (Parcel parcel)
+    {
+        yogaPoseList = new ArrayList<Pose>();
+        parcel.readTypedList(yogaPoseList, Pose.CREATOR);
+    }
+    @Override
+    public int describeContents()
+    {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i)
+    {
+        parcel.writeTypedList(yogaPoseList);
+    }
+
+    static final Parcelable.Creator<ApiNetworkResponse> CREATOR = new Parcelable.Creator<ApiNetworkResponse>()
+    {
+        @Override
+        public ApiNetworkResponse createFromParcel(Parcel parcel)
+        {
+            return new ApiNetworkResponse(parcel);
+        }
+
+        @Override
+        public ApiNetworkResponse[] newArray(int i)
+        {
+            return new ApiNetworkResponse[i];
+        }
+    };
+
 }
