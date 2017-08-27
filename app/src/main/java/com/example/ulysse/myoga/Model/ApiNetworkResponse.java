@@ -19,33 +19,6 @@ public class ApiNetworkResponse implements Parcelable
         return yogaPoseList;
     }
 
-    public List<Pose> searchPose(String query)
-    {
-        query = query.toLowerCase();
-
-        List<Pose> result = new LinkedList<>();
-        List<Pose> baseList = yogaPoseList;
-
-        try
-        {
-            Thread.sleep(2000);
-        }
-        catch (InterruptedException e)
-        {
-            e.printStackTrace();
-        }
-
-        for (int i = 0; i < baseList.size(); i++)
-        {
-            if (baseList.get(i).englishName.toLowerCase().contains(query))
-            {
-                result.add(baseList.get(i));
-            }
-        }
-
-        return result;
-    }
-
     public ApiNetworkResponse (List<Pose> yogaPoseList)
     {
         this.yogaPoseList = yogaPoseList;

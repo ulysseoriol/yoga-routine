@@ -18,6 +18,8 @@ import com.example.ulysse.myoga.Utils.ApiUtils;
 import com.example.ulysse.myoga.Utils.SingleToast;
 import com.jakewharton.rxbinding2.widget.RxTextView;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -40,7 +42,7 @@ public class MainActivity extends AppCompatActivity
     private ProgressBar searchProgressBar;
 
     private NetworkService networkService;
-    private ApiNetworkResponse apiNetworkResponse;
+    private List<Pose> poseList;
 
     private Disposable textViewDisposable;
 
@@ -59,12 +61,12 @@ public class MainActivity extends AppCompatActivity
         if(savedInstanceState == null)
         {
             networkService = new NetworkService(ApiUtils.createNetworkService());
-            getYogaPoseList();
+            getYogaPoseList(); // Change json file to array only for this to work
         }
         else
         {
-            ApiNetworkResponse savedRecyclerListState = savedInstanceState.getParcelable(LIST_PARCEL_KEY);
-            recyclerView.setAdapter(new YogaPoseAdapter(savedRecyclerListState.getYogaPoseList()));
+            List<Pose> savedRecyclerListState = savedInstanceState.getParcelableArrayList(LIST_PARCEL_KEY);
+            recyclerView.setAdapter(new YogaPoseAdapter(savedRecyclerListState));
         }
     }
 
@@ -72,10 +74,11 @@ public class MainActivity extends AppCompatActivity
     protected void onSaveInstanceState(Bundle outState)
     {
         super.onSaveInstanceState(outState);
-        ApiNetworkResponse currentListItems = new ApiNetworkResponse(
-                ((YogaPoseAdapter)recyclerView.getAdapter()).getYogaPoseList());
+        List<Pose> parcelablePoseList =
+                ((YogaPoseAdapter)recyclerView.getAdapter()).getYogaPoseList() ;
 
-        outState.putParcelable(LIST_PARCEL_KEY, currentListItems);
+        ArrayList<Pose> arrayListPose = new ArrayList<>(parcelablePoseList);
+        outState.putParcelableArrayList(LIST_PARCEL_KEY, arrayListPose);
         outState.putParcelable(LIST_STATE_KEY, recyclerView.getLayoutManager().onSaveInstanceState());
     }
 
@@ -94,10 +97,11 @@ public class MainActivity extends AppCompatActivity
         networkService.getYogaPoseList(new NetworkService.GetYogaPoseListCallback()
         {
             @Override
-            public void onSuccess(ApiNetworkResponse yogaPoseListResponse)
+            public void onSuccess(List<Pose> yogaPoseListResponse)
             {
-                apiNetworkResponse = yogaPoseListResponse; //Keep a reference for search
-                recyclerView.setAdapter(new YogaPoseAdapter(yogaPoseListResponse.getYogaPoseList()));
+//                apiNetworkResponse = yogaPoseListResponse; //Keep a reference for search
+                poseList = yogaPoseListResponse;
+                recyclerView.setAdapter(new YogaPoseAdapter(yogaPoseListResponse));
                 subscribeTextViewObservable();
                 Log.d("MainActivity", "posts loaded from API");
             }
@@ -142,7 +146,7 @@ public class MainActivity extends AppCompatActivity
                     @Override
                     public List<Pose> apply(CharSequence query) throws Exception
                     {
-                        return apiNetworkResponse.searchPose(query.toString());
+                        return searchPose(query.toString());
                     }
                 })
                 .observeOn(AndroidSchedulers.mainThread())
@@ -155,6 +159,32 @@ public class MainActivity extends AppCompatActivity
                         showResult(result);
                     }
                 });
+    }
+
+    public List<Pose> searchPose(String query)
+    {
+        query = query.toLowerCase();
+
+        List<Pose> result = new ArrayList<>();
+
+        try
+        {
+            Thread.sleep(2000);
+        }
+        catch (InterruptedException e)
+        {
+            e.printStackTrace();
+        }
+
+        for (int i = 0; i < poseList.size(); i++)
+        {
+            if (poseList.get(i).englishName.toLowerCase().contains(query))
+            {
+                result.add(poseList.get(i));
+            }
+        }
+
+        return result;
     }
 
     @Override

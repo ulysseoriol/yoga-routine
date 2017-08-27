@@ -1,6 +1,9 @@
 package com.example.ulysse.myoga.Network;
 
 import com.example.ulysse.myoga.Model.ApiNetworkResponse;
+import com.example.ulysse.myoga.Model.Pose;
+
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -21,10 +24,10 @@ public class NetworkService
 
     public void getYogaPoseList(final GetYogaPoseListCallback callback)
     {
-        networkAPIInterface.getYogaPoseListRequest().enqueue(new Callback<ApiNetworkResponse>()
+        networkAPIInterface.getYogaPoseListRequest().enqueue(new Callback<List<Pose>>()
         {
             @Override
-            public void onResponse(Call<ApiNetworkResponse> call, Response<ApiNetworkResponse> response)
+            public void onResponse(Call<List<Pose>> call, Response<List<Pose>> response)
             {
                 if (response.isSuccessful())
                 {
@@ -46,7 +49,7 @@ public class NetworkService
             }
 
             @Override
-            public void onFailure(Call<ApiNetworkResponse> call, Throwable networkError)
+            public void onFailure(Call<List<Pose>> call, Throwable networkError)
             {
                 callback.onError(networkError);
 
@@ -56,7 +59,7 @@ public class NetworkService
 
     public interface GetYogaPoseListCallback
     {
-        void onSuccess(ApiNetworkResponse yogaPoseListResponse);
+        void onSuccess(List<Pose> yogaPoseListResponse);
 
         void onError(Throwable t);
     }
