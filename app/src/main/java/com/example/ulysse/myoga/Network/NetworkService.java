@@ -28,14 +28,6 @@ public class NetworkService
             {
                 if (response.isSuccessful())
                 {
-//                    try
-//                    {
-//                        Thread.sleep(2000);
-//                    }
-//                    catch (InterruptedException e)
-//                    {
-//                        e.printStackTrace();
-//                    }
                     callback.onSuccess(response.body());
                 }
                 else
