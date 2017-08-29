@@ -4,18 +4,35 @@ package com.example.ulysse.myoga.Model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 public class Pose implements Parcelable
 {
 
     @SerializedName("englishName")
-    @Expose
-    public String englishName;
+    private String englishName;
     @SerializedName("sanskritName")
-    @Expose
-    public String sanskritName;
+    private String sanskritName;
+
+    public String getEnglishName()
+    {
+        return englishName;
+    }
+
+    public void setEnglishName(String englishName)
+    {
+        this.englishName = englishName;
+    }
+
+    public String getSanskritName()
+    {
+        return sanskritName;
+    }
+
+    public void setSanskritName(String sanskritName)
+    {
+        this.sanskritName = sanskritName;
+    }
 
     Pose (Parcel in)
     {

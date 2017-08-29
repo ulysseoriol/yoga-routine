@@ -14,11 +14,16 @@ public class NetworkService
 {
     private final NetworkAPIInterface networkAPIInterface;
 
+    //TODO: Singleton
     public NetworkService(NetworkAPIInterface networkAPIInterface)
     {
         this.networkAPIInterface = networkAPIInterface;
     }
 
+    /**
+     *
+     * @param callback
+     */
     public void getYogaPoseList(final GetYogaPoseListCallback callback)
     {
         networkAPIInterface.getYogaPoseListRequest().enqueue(new Callback<ApiNetworkResponse>()

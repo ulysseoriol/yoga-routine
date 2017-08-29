@@ -5,7 +5,6 @@ import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ProgressBar;
@@ -14,10 +13,11 @@ import android.widget.Toast;
 import com.example.ulysse.myoga.Model.ApiNetworkResponse;
 import com.example.ulysse.myoga.Model.Pose;
 import com.example.ulysse.myoga.Network.NetworkService;
-import com.example.ulysse.myoga.Utils.ApiUtils;
+import com.example.ulysse.myoga.Network.RetrofitClient;
 import com.example.ulysse.myoga.Utils.SingleToast;
 import com.jakewharton.rxbinding2.widget.RxTextView;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -31,16 +31,17 @@ import io.reactivex.schedulers.Schedulers;
 public class MainActivity extends AppCompatActivity
 {
     private final static String LIST_STATE_KEY = "recycler_list_state";
+    private final static String SEARCH_LIST_PARCEL_KEY = "recycler_search_list_parcel";
     private final static String LIST_PARCEL_KEY = "recycler_list_parcel";
     private final static int GRID_COLUMN_NUMBER = 3;
-    private final static int USER_INPUT_TIME_DELAY = 500;
+    private final static int USER_INPUT_TIME_DELAY = 1000;
 
     private RecyclerView recyclerView;
     private EditText queryEditText;
     private ProgressBar searchProgressBar;
+    private ProgressBar dataProgressBar;
 
-    private NetworkService networkService;
-    private ApiNetworkResponse apiNetworkResponse;
+    private PresenterInterface presenterInterface;
 
     private Disposable textViewDisposable;
 
@@ -53,18 +54,26 @@ public class MainActivity extends AppCompatActivity
 
         queryEditText = (EditText) findViewById(R.id.search_edit_text);
         searchProgressBar = (ProgressBar) findViewById(R.id.search_progress_bar);
+        dataProgressBar = (ProgressBar) findViewById(R.id.data_progress_bar);
         recyclerView = (RecyclerView) findViewById(R.id.recyclerview);
         recyclerView.setLayoutManager(new GridLayoutManager(MainActivity.this, GRID_COLUMN_NUMBER));
+        recyclerView.setAdapter(new YogaPoseAdapter(Collections.EMPTY_LIST)); //set empty adapter in case of search before request returns
 
-        if(savedInstanceState == null)
+        subscribeTextViewObservable();
+
+        if (savedInstanceState == null)
         {
-            networkService = new NetworkService(ApiUtils.createNetworkService());
-            getYogaPoseList();
+            presenterInterface = new PresenterLayer(this, new NetworkService(RetrofitClient.createNetworkService()), Collections.EMPTY_LIST);
+            presenterInterface.loadYogaPoseList();
         }
         else
         {
-            ApiNetworkResponse savedRecyclerListState = savedInstanceState.getParcelable(LIST_PARCEL_KEY);
-            recyclerView.setAdapter(new YogaPoseAdapter(savedRecyclerListState.getYogaPoseList()));
+            dataProgressBar.setVisibility(View.GONE);
+            ApiNetworkResponse yogaPoseListDB = savedInstanceState.getParcelable(LIST_PARCEL_KEY);
+            presenterInterface = new PresenterLayer(this, new NetworkService(RetrofitClient.createNetworkService()), yogaPoseListDB.getYogaPoseList());
+
+            ApiNetworkResponse savedRecyclerViewGridItems = savedInstanceState.getParcelable(SEARCH_LIST_PARCEL_KEY);
+            ((YogaPoseAdapter) recyclerView.getAdapter()).setYogaPoseList(savedRecyclerViewGridItems.getYogaPoseList());
         }
     }
 
@@ -72,10 +81,14 @@ public class MainActivity extends AppCompatActivity
     protected void onSaveInstanceState(Bundle outState)
     {
         super.onSaveInstanceState(outState);
-        ApiNetworkResponse currentListItems = new ApiNetworkResponse(
-                ((YogaPoseAdapter)recyclerView.getAdapter()).getYogaPoseList());
+        ApiNetworkResponse recyclerViewGridItems = new ApiNetworkResponse(
+                ((YogaPoseAdapter) recyclerView.getAdapter()).getYogaPoseList());
 
-        outState.putParcelable(LIST_PARCEL_KEY, currentListItems);
+        //TODO: issue if triggered without request result: empty list, no later request
+        ApiNetworkResponse yogaPoseListDB = new ApiNetworkResponse(presenterInterface.getYogaPoseListDB());
+
+        outState.putParcelable(SEARCH_LIST_PARCEL_KEY, recyclerViewGridItems);
+        outState.putParcelable(LIST_PARCEL_KEY, yogaPoseListDB);
         outState.putParcelable(LIST_STATE_KEY, recyclerView.getLayoutManager().onSaveInstanceState());
     }
 
@@ -84,44 +97,44 @@ public class MainActivity extends AppCompatActivity
     {
         super.onRestoreInstanceState(savedInstanceState);
 
-        Parcelable savedRecyclerLayoutState = savedInstanceState.getParcelable(LIST_STATE_KEY);
-        recyclerView.getLayoutManager().onRestoreInstanceState(savedRecyclerLayoutState);
+        Parcelable recycleViewLayoutState = savedInstanceState.getParcelable(LIST_STATE_KEY);
+        recyclerView.getLayoutManager().onRestoreInstanceState(recycleViewLayoutState);
     }
 
-    //TODO: Display progressbar while loading
-    public void getYogaPoseList()
+    /**
+     * @param requestResponse
+     */
+    protected void updateViewForRequestSuccess(List<Pose> requestResponse)
     {
-        networkService.getYogaPoseList(new NetworkService.GetYogaPoseListCallback()
-        {
-            @Override
-            public void onSuccess(ApiNetworkResponse yogaPoseListResponse)
-            {
-                apiNetworkResponse = yogaPoseListResponse; //Keep a reference for search
-                recyclerView.setAdapter(new YogaPoseAdapter(yogaPoseListResponse.getYogaPoseList()));
-                subscribeTextViewObservable();
-                Log.d("MainActivity", "posts loaded from API");
-            }
-
-            @Override
-            public void onError(Throwable networkError)
-            {
-                SingleToast.show(getApplicationContext(), R.string.request_failed, Toast.LENGTH_SHORT);
-                Log.d("MainActivity", "error loading posts from API");
-            }
-
-        });
+        dataProgressBar.setVisibility(View.GONE);
+        ((YogaPoseAdapter) recyclerView.getAdapter()).setYogaPoseList(requestResponse);
     }
 
-
-    protected void showResult(List<Pose> result)
+    /**
+     *
+     */
+    protected void updateViewForRequestError()
     {
-        if (result.isEmpty())
+        dataProgressBar.setVisibility(View.GONE);
+        SingleToast.show(this, R.string.request_failed, Toast.LENGTH_SHORT);
+    }
+
+    /**
+     *
+     * @param searchResultList
+     */
+    protected void updateViewForSearchResult(List<Pose> searchResultList)
+    {
+        if (searchResultList.isEmpty())
         {
             SingleToast.show(this, R.string.search_nothing_found, Toast.LENGTH_SHORT);
         }
-        ((YogaPoseAdapter) recyclerView.getAdapter()).setYogaPoseList(result);
+        ((YogaPoseAdapter) recyclerView.getAdapter()).setYogaPoseList(searchResultList);
     }
 
+    /**
+     *
+     */
     private void subscribeTextViewObservable()
     {
         textViewDisposable = RxTextView.textChanges(queryEditText)
@@ -140,19 +153,19 @@ public class MainActivity extends AppCompatActivity
                 .map(new Function<CharSequence, List<Pose>>()
                 {
                     @Override
-                    public List<Pose> apply(CharSequence query) throws Exception
+                    public List<Pose> apply(CharSequence searchQuery) throws Exception
                     {
-                        return apiNetworkResponse.searchPose(query.toString());
+                        return presenterInterface.searchYogaPoseList(searchQuery.toString());
                     }
                 })
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<List<Pose>>()
                 {
                     @Override
-                    public void accept(List<Pose> result) throws Exception
+                    public void accept(List<Pose> searchResultList) throws Exception
                     {
                         searchProgressBar.setVisibility(View.GONE);
-                        showResult(result);
+                        updateViewForSearchResult(searchResultList);
                     }
                 });
     }
