@@ -9,47 +9,35 @@
         android:layout_height="match_parent"
         android:animateLayoutChanges="true">
 
-        <Button
-            android:id="@+id/search_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentTop="true"
-            android:layout_margin="@dimen/default_margin"
-            android:layout_marginLeft="@dimen/default_margin"
-            android:layout_marginStart="@dimen/default_margin"
-            android:layout_marginTop="@dimen/default_margin"
-            android:text="@string/search_button_name"/>
-
-
         <ProgressBar
             android:id="@+id/search_progress_bar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_toLeftOf="@id/search_button"
-            android:layout_alignBottom="@id/search_button"
-            android:indeterminate="false"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:indeterminate="true"
             android:visibility="gone"/>
 
         <EditText
             android:id="@+id/search_edit_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignBottom="@id/search_button"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:layout_marginEnd="@dimen/default_margin"
             android:layout_marginStart="@dimen/default_margin"
-            android:layout_toLeftOf="@id/search_progress_bar"
             android:inputType="text"
             android:lines="1"
+            android:layout_toLeftOf="@id/search_progress_bar"
+            android:layout_toStartOf="@id/search_progress_bar"
+            android:hint="@string/edit_text_search_hint"
             />
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recyclerview"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_centerInParent="true"
             android:layout_below="@id/search_edit_text"/>
 
         <ProgressBar

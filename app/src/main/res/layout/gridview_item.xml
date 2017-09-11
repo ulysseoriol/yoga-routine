@@ -22,6 +22,7 @@
             android:layout_weight="1"
             android:ems="@integer/textview_default_ems"
             android:inputType="none"
+            android:onClick="onClickLoadUrl"
             android:text="@{pose.englishName}"/>
     </android.support.v7.widget.CardView>
 

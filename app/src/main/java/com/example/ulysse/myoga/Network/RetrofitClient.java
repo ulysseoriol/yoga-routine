@@ -16,7 +16,7 @@ public class RetrofitClient
     /**
      * @return
      */
-    public static NetworkAPIInterface createNetworkService()
+    public static NetworkApiInterface createNetworkService()
     {
         //TODO: Build caching mechanism
 
@@ -27,6 +27,6 @@ public class RetrofitClient
                     .addConverterFactory(GsonConverterFactory.create())
                     .build();
         }
-        return retrofit.create(NetworkAPIInterface.class);
+        return retrofit.create(NetworkApiInterface.class);
     }
 }
