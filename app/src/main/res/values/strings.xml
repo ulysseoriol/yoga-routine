@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">My Yoga Routine</string>
-    <string name="search_button_name">Search</string>
+    <string name="edit_text_search_hint">Search</string>
     <string name="search_nothing_found">Search returned no results</string>
     <string name="request_failed">Failed to retrieve the data!</string>
 

@@ -1,5 +1,7 @@
 package com.example.ulysse.myoga;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
@@ -8,6 +10,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.ulysse.myoga.Model.ApiNetworkResponse;
@@ -33,6 +36,7 @@ public class MainActivity extends AppCompatActivity
     private final static String LIST_STATE_KEY = "recycler_list_state";
     private final static String SEARCH_LIST_PARCEL_KEY = "recycler_search_list_parcel";
     private final static String LIST_PARCEL_KEY = "recycler_list_parcel";
+    private final static String WEBSITE_BASE_URL = "http://www.yogajournal.com/pose/";
     private final static int GRID_COLUMN_NUMBER = 3;
     private final static int USER_INPUT_TIME_DELAY = 1000;
 
@@ -58,6 +62,7 @@ public class MainActivity extends AppCompatActivity
         recyclerView = (RecyclerView) findViewById(R.id.recyclerview);
         recyclerView.setLayoutManager(new GridLayoutManager(MainActivity.this, GRID_COLUMN_NUMBER));
         recyclerView.setAdapter(new YogaPoseAdapter(Collections.EMPTY_LIST)); //set empty adapter in case of search before request returns
+
 
         subscribeTextViewObservable();
 
@@ -99,6 +104,29 @@ public class MainActivity extends AppCompatActivity
 
         Parcelable recycleViewLayoutState = savedInstanceState.getParcelable(LIST_STATE_KEY);
         recyclerView.getLayoutManager().onRestoreInstanceState(recycleViewLayoutState);
+    }
+
+    @Override
+    protected void onDestroy()
+    {
+        super.onDestroy();
+
+        if (textViewDisposable != null)
+        {
+            textViewDisposable.dispose();
+        }
+    }
+
+    public void onClickLoadUrl(View view)
+    {
+        TextView textView = (TextView) view;
+        String poseName = textView.getText().toString().toLowerCase(); //English Name
+        poseName = poseName.replaceAll("[^a-z]", "-");                 //Format url
+        String poseUrl = WEBSITE_BASE_URL + poseName;
+
+        Intent loadUrlIntent = new Intent(Intent.ACTION_VIEW);
+        loadUrlIntent.setData(Uri.parse(poseUrl));
+        startActivity(loadUrlIntent);
     }
 
     /**
@@ -168,16 +196,5 @@ public class MainActivity extends AppCompatActivity
                         updateViewForSearchResult(searchResultList);
                     }
                 });
-    }
-
-    @Override
-    protected void onDestroy()
-    {
-        super.onDestroy();
-
-        if (textViewDisposable != null)
-        {
-            textViewDisposable.dispose();
-        }
     }
 }

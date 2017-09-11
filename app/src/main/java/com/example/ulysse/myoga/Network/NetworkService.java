@@ -12,10 +12,10 @@ import retrofit2.Response;
 
 public class NetworkService
 {
-    private final NetworkAPIInterface networkAPIInterface;
+    private final NetworkApiInterface networkAPIInterface;
 
     //TODO: Singleton
-    public NetworkService(NetworkAPIInterface networkAPIInterface)
+    public NetworkService(NetworkApiInterface networkAPIInterface)
     {
         this.networkAPIInterface = networkAPIInterface;
     }

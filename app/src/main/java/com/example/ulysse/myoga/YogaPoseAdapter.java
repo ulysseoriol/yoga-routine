@@ -18,6 +18,16 @@ public class YogaPoseAdapter extends RecyclerView.Adapter<YogaPoseAdapter.Bindin
 {
     private List<Pose> yogaPoseList;
 
+    public List<Pose> getYogaPoseList()
+    {
+        return yogaPoseList;
+    }
+
+    public void setYogaPoseList(List<Pose> yogaPoseList)
+    {
+        this.yogaPoseList = yogaPoseList;
+        notifyDataSetChanged();
+    }
 
     public YogaPoseAdapter(List<Pose> yogaPoseList)
     {
@@ -45,16 +55,7 @@ public class YogaPoseAdapter extends RecyclerView.Adapter<YogaPoseAdapter.Bindin
         holder.bind(pose);
     }
 
-    public List<Pose> getYogaPoseList()
-    {
-        return yogaPoseList;
-    }
 
-    public void setYogaPoseList(List<Pose> yogaPoseList)
-    {
-        this.yogaPoseList = yogaPoseList;
-        notifyDataSetChanged();
-    }
 
     public class BindingHolder extends RecyclerView.ViewHolder
     {

@@ -79,14 +79,14 @@ public class PresenterLayer implements PresenterInterface
             {
                 yogaPoseListDB = yogaPoseDataResponse.getYogaPoseList(); //save reference for search
                 activityView.updateViewForRequestSuccess(yogaPoseListDB);
-                Log.d("MainActivity", "posts loaded from API");
+                Log.d("PresenterLayer", "posts loaded from API");
             }
 
             @Override
             public void onError(Throwable networkError)
             {
                 activityView.updateViewForRequestError();
-                Log.d("MainActivity", "error loading posts from API");
+                Log.d("PresenterLayer", "error loading posts from API");
             }
         });
     }
