@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity
     private ProgressBar searchProgressBar;
     private ProgressBar dataProgressBar;
 
-    private PresenterInterface presenterInterface;
+    private PresenterInteractor presenterInteractor;
 
     private Disposable textViewDisposable;
 
@@ -68,14 +68,14 @@ public class MainActivity extends AppCompatActivity
 
         if (savedInstanceState == null)
         {
-            presenterInterface = new PresenterLayer(this, new NetworkService(RetrofitClient.createNetworkService()), Collections.EMPTY_LIST);
-            presenterInterface.loadYogaPoseList();
+            presenterInteractor = new PresenterLayer(this, new NetworkService(RetrofitClient.createNetworkService()), Collections.EMPTY_LIST);
+            presenterInteractor.loadYogaPoseList();
         }
         else
         {
             dataProgressBar.setVisibility(View.GONE);
             ApiNetworkResponse yogaPoseListDB = savedInstanceState.getParcelable(LIST_PARCEL_KEY);
-            presenterInterface = new PresenterLayer(this, new NetworkService(RetrofitClient.createNetworkService()), yogaPoseListDB.getYogaPoseList());
+            presenterInteractor = new PresenterLayer(this, new NetworkService(RetrofitClient.createNetworkService()), yogaPoseListDB.getYogaPoseList());
 
             ApiNetworkResponse savedRecyclerViewGridItems = savedInstanceState.getParcelable(SEARCH_LIST_PARCEL_KEY);
             ((YogaPoseAdapter) recyclerView.getAdapter()).setYogaPoseList(savedRecyclerViewGridItems.getYogaPoseList());
@@ -90,7 +90,7 @@ public class MainActivity extends AppCompatActivity
                 ((YogaPoseAdapter) recyclerView.getAdapter()).getYogaPoseList());
 
         //TODO: issue if triggered without request result: empty list, no later request
-        ApiNetworkResponse yogaPoseListDB = new ApiNetworkResponse(presenterInterface.getYogaPoseListDB());
+        ApiNetworkResponse yogaPoseListDB = new ApiNetworkResponse(presenterInteractor.getYogaPoseListDB());
 
         outState.putParcelable(SEARCH_LIST_PARCEL_KEY, recyclerViewGridItems);
         outState.putParcelable(LIST_PARCEL_KEY, yogaPoseListDB);
@@ -183,7 +183,7 @@ public class MainActivity extends AppCompatActivity
                     @Override
                     public List<Pose> apply(CharSequence searchQuery) throws Exception
                     {
-                        return presenterInterface.searchYogaPoseList(searchQuery.toString());
+                        return presenterInteractor.searchYogaPoseList(searchQuery.toString());
                     }
                 })
                 .observeOn(AndroidSchedulers.mainThread())

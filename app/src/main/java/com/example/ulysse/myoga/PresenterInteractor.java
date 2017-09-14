@@ -8,7 +8,7 @@ import java.util.List;
  * Created by ulysse on 8/28/17.
  */
 
-public interface PresenterInterface
+public interface PresenterInteractor
 {
     void loadYogaPoseList();
     List<Pose> searchYogaPoseList(String searchQuery);

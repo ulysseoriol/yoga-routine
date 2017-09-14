@@ -13,7 +13,7 @@ import java.util.List;
  * Created by ulysse on 8/28/17.
  */
 
-public class PresenterLayer implements PresenterInterface
+public class PresenterLayer implements PresenterInteractor
 {
     private MainActivity activityView;
     private NetworkService networkService;
