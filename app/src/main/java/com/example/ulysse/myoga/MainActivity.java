@@ -56,10 +56,10 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        queryEditText = (EditText) findViewById(R.id.search_edit_text);
-        searchProgressBar = (ProgressBar) findViewById(R.id.search_progress_bar);
-        dataProgressBar = (ProgressBar) findViewById(R.id.data_progress_bar);
-        recyclerView = (RecyclerView) findViewById(R.id.recyclerview);
+        queryEditText = findViewById(R.id.search_edit_text);
+        searchProgressBar = findViewById(R.id.search_progress_bar);
+        dataProgressBar = findViewById(R.id.data_progress_bar);
+        recyclerView = findViewById(R.id.recyclerview);
         recyclerView.setLayoutManager(new GridLayoutManager(MainActivity.this, GRID_COLUMN_NUMBER));
         recyclerView.setAdapter(new YogaPoseAdapter(Collections.EMPTY_LIST)); //set empty adapter in case of search before request returns
 

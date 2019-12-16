@@ -1,12 +1,12 @@
 package com.example.ulysse.myoga;
 
-import android.databinding.DataBindingUtil;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.example.ulysse.myoga.Model.Pose;
-import com.example.ulysse.myoga.databinding.GridviewItemBinding;
 
 import java.util.List;
 
@@ -14,7 +14,7 @@ import java.util.List;
  * Created by ulysse on 8/7/17.
  */
 
-public class YogaPoseAdapter extends RecyclerView.Adapter<YogaPoseAdapter.BindingHolder>
+public class YogaPoseAdapter extends RecyclerView.Adapter<YogaPoseAdapter.ViewHolder>
 {
     private List<Pose> yogaPoseList;
 
@@ -41,15 +41,14 @@ public class YogaPoseAdapter extends RecyclerView.Adapter<YogaPoseAdapter.Bindin
     }
 
     @Override
-    public BindingHolder onCreateViewHolder(ViewGroup parent, int viewType)
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType)
     {
-        LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
-        GridviewItemBinding binding = DataBindingUtil.inflate(layoutInflater, R.layout.gridview_item, parent, false);
-        return new BindingHolder(binding);
+        final View view =  LayoutInflater.from(parent.getContext()).inflate(R.layout.gridview_item, parent, false);
+        return new ViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(BindingHolder holder, int position)
+    public void onBindViewHolder(ViewHolder holder, int position)
     {
         Pose pose = yogaPoseList.get(position);
         holder.bind(pose);
@@ -57,20 +56,19 @@ public class YogaPoseAdapter extends RecyclerView.Adapter<YogaPoseAdapter.Bindin
 
 
 
-    public class BindingHolder extends RecyclerView.ViewHolder
+    public class ViewHolder extends RecyclerView.ViewHolder
     {
-        private final GridviewItemBinding binding;
+        private TextView simpleTextView;
 
-        public BindingHolder(GridviewItemBinding binding)
+        public ViewHolder(View view)
         {
-            super(binding.getRoot());
-            this.binding = binding;
+            super(view);
+            this.simpleTextView = itemView.findViewById(R.id.poseName);
         }
 
         public void bind(Pose pose)
         {
-            binding.setVariable(com.example.ulysse.myoga.BR.pose, pose);
-            binding.executePendingBindings();
+            simpleTextView.setText(pose.getEnglishName());
         }
     }
 }
