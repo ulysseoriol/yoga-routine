@@ -25,7 +25,7 @@ public class ApiNetworkResponse implements Parcelable
 
     ApiNetworkResponse (Parcel parcel)
     {
-        yogaPoseList = new ArrayList<Pose>();
+        yogaPoseList = new ArrayList<>();
         parcel.readTypedList(yogaPoseList, Pose.CREATOR);
     }
     @Override
