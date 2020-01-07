@@ -85,17 +85,6 @@ class MainActivity : AppCompatActivity()
         }
     }
 
-    fun onClickLoadUrl(view: View)
-    {
-        val textView = view as TextView
-        var poseName = textView.text.toString().toLowerCase() //English Name
-        poseName = poseName.replace("[^a-z]".toRegex(), "-") //Format url
-        val poseUrl = WEBSITE_BASE_URL + poseName
-        val loadUrlIntent = Intent(Intent.ACTION_VIEW)
-        loadUrlIntent.data = Uri.parse(poseUrl)
-        startActivity(loadUrlIntent)
-    }
-
     /**
      * @param requestResponse
      */
@@ -151,7 +140,6 @@ class MainActivity : AppCompatActivity()
         private const val LIST_STATE_KEY = "recycler_list_state"
         private const val SEARCH_LIST_PARCEL_KEY = "recycler_search_list_parcel"
         private const val LIST_PARCEL_KEY = "recycler_list_parcel"
-        private const val WEBSITE_BASE_URL = "http://www.yogajournal.com/pose/"
         private const val GRID_COLUMN_NUMBER = 3
         private const val USER_INPUT_TIME_DELAY = 1000
     }
