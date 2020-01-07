@@ -1,9 +1,10 @@
 package com.example.ulysse.myoga;
 
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.ulysse.myoga.Model.Pose;
@@ -59,16 +60,20 @@ public class YogaPoseAdapter extends RecyclerView.Adapter<YogaPoseAdapter.ViewHo
     public class ViewHolder extends RecyclerView.ViewHolder
     {
         private TextView simpleTextView;
+        private ImageView imageView;
 
         public ViewHolder(View view)
         {
             super(view);
             this.simpleTextView = itemView.findViewById(R.id.poseName);
+            this.imageView = itemView.findViewById(R.id.poseImage);
         }
 
         public void bind(Pose pose)
         {
             simpleTextView.setText(pose.getEnglishName());
+
+
         }
     }
 }

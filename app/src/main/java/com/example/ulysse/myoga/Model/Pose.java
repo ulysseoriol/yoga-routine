@@ -13,6 +13,19 @@ public class Pose implements Parcelable
     private String englishName;
     @SerializedName("sanskritName")
     private String sanskritName;
+    @SerializedName("poseImageUrl")
+    private String poseImageUrl;
+
+    public String getPoseImageUrl()
+    {
+        return poseImageUrl;
+    }
+
+    public void setPoseImageUrl(String poseImageUrl)
+    {
+        this.poseImageUrl = poseImageUrl;
+    }
+
 
     public String getEnglishName()
     {
@@ -38,6 +51,7 @@ public class Pose implements Parcelable
     {
         englishName = in.readString();
         sanskritName = in.readString();
+        poseImageUrl = in.readString();
     }
 
     static final Parcelable.Creator<Pose> CREATOR = new Parcelable.Creator<Pose>()
@@ -66,5 +80,6 @@ public class Pose implements Parcelable
     {
         dest.writeString(englishName);
         dest.writeString(sanskritName);
+        dest.writeString(poseImageUrl);
     }
 }
