@@ -1,17 +1,16 @@
 package com.example.ulysse.myoga
 
-import android.content.Intent
-import android.net.Uri
+import android.content.Context
 import android.os.Bundle
 import android.os.Parcelable
-import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import android.util.DisplayMetrics
 import android.view.View
 import android.widget.EditText
 import android.widget.ProgressBar
-import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.ulysse.myoga.Model.ApiNetworkResponse
 import com.example.ulysse.myoga.Model.Pose
 import com.example.ulysse.myoga.Network.NetworkService
@@ -21,8 +20,8 @@ import com.jakewharton.rxbinding2.widget.RxTextView
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
-import java.util.*
 import java.util.concurrent.TimeUnit
+import kotlin.math.roundToInt
 
 class MainActivity : AppCompatActivity()
 {
@@ -32,6 +31,7 @@ class MainActivity : AppCompatActivity()
     private var queryEditText: EditText? = null
     private var searchProgressBar: ProgressBar? = null
     private var textViewDisposable: Disposable? = null
+
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
@@ -40,7 +40,7 @@ class MainActivity : AppCompatActivity()
         searchProgressBar = findViewById(R.id.search_progress_bar)
         dataProgressBar = findViewById(R.id.data_progress_bar)
         recyclerView = findViewById(R.id.recyclerview)
-        recyclerView.layoutManager = GridLayoutManager(this@MainActivity, GRID_COLUMN_NUMBER)
+        recyclerView.layoutManager = GridLayoutManager(this@MainActivity, calculateNoOfColumns())
         recyclerView.adapter = YogaPoseAdapter(emptyList()) //set empty adapter in case of search before request returns
         subscribeTextViewObservable()
         if (savedInstanceState == null)
@@ -83,6 +83,16 @@ class MainActivity : AppCompatActivity()
         {
             textViewDisposable!!.dispose()
         }
+    }
+
+    fun calculateNoOfColumns(): Int
+    {
+        var metrics = DisplayMetrics();
+
+        windowManager.defaultDisplay.getMetrics(metrics)
+        var dpWidth = metrics.widthPixels / metrics.density;
+        var noOfColumns = dpWidth / 180;
+        return noOfColumns.roundToInt();
     }
 
     /**

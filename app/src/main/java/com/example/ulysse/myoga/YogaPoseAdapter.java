@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.ulysse.myoga.Model.Pose;
 
 import java.util.List;
@@ -81,10 +82,10 @@ public class YogaPoseAdapter extends RecyclerView.Adapter<YogaPoseAdapter.ViewHo
         public void bind(Pose pose)
         {
             simpleTextView.setText(pose.getEnglishName());
-            Glide.with(imageView.getContext()).load(pose.getPoseImageUrl()).into(imageView);
+            Glide.with(imageView.getContext()).load(pose.getPoseImageUrl()).centerCrop().into(imageView);
             cardView.setOnClickListener((View view) ->
             {
-                String poseName = pose.getEnglishName().toLowerCase(); //English Name
+                String poseName = pose.getEnglishName().toLowerCase();
                 poseName = poseName.replaceAll("[^a-z]", "-");//Format url
                 poseName = WEBSITE_BASE_URL + poseName;
                 Intent loadUrlIntent = new Intent(Intent.ACTION_VIEW);
