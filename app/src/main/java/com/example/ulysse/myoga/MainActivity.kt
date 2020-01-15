@@ -1,6 +1,5 @@
 package com.example.ulysse.myoga
 
-import android.content.Context
 import android.os.Bundle
 import android.os.Parcelable
 import android.util.DisplayMetrics
@@ -9,12 +8,14 @@ import android.widget.EditText
 import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.ulysse.myoga.Model.ApiNetworkResponse
 import com.example.ulysse.myoga.Model.Pose
 import com.example.ulysse.myoga.Network.NetworkService
 import com.example.ulysse.myoga.Network.RetrofitClient
+import com.example.ulysse.myoga.UI.GridSpacingItemDecoration
 import com.example.ulysse.myoga.Utils.SingleToast
 import com.jakewharton.rxbinding2.widget.RxTextView
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -26,23 +27,35 @@ import kotlin.math.roundToInt
 class MainActivity : AppCompatActivity()
 {
     private lateinit var recyclerView: RecyclerView
-    private lateinit var presenterInteractor: PresenterInteractor
     private lateinit var dataProgressBar: ProgressBar
     private var queryEditText: EditText? = null
     private var searchProgressBar: ProgressBar? = null
+    private lateinit var presenterInteractor: PresenterInteractor
     private var textViewDisposable: Disposable? = null
+    private var toolbar : Toolbar? = null
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
+
         setContentView(R.layout.activity_main)
         queryEditText = findViewById(R.id.search_edit_text)
         searchProgressBar = findViewById(R.id.search_progress_bar)
         dataProgressBar = findViewById(R.id.data_progress_bar)
         recyclerView = findViewById(R.id.recyclerview)
-        recyclerView.layoutManager = GridLayoutManager(this@MainActivity, calculateNoOfColumns())
+
+        toolbar =  findViewById(R.id.toolbar)
+        setSupportActionBar(toolbar)
+        supportActionBar?.setDisplayShowHomeEnabled(true)
+
+        val columnNb = calculateNoOfColumns()
+        recyclerView.layoutManager = GridLayoutManager(this@MainActivity, columnNb)
+        val spacingInPixels = resources.getDimensionPixelSize(R.dimen.default_margin)
+        recyclerView.addItemDecoration(GridSpacingItemDecoration(columnNb, spacingInPixels, true, 0))
         recyclerView.adapter = YogaPoseAdapter(emptyList()) //set empty adapter in case of search before request returns
+
         subscribeTextViewObservable()
+
         if (savedInstanceState == null)
         {
             presenterInteractor = PresenterLayer(this, NetworkService(RetrofitClient.createNetworkService()), emptyList())
@@ -55,6 +68,12 @@ class MainActivity : AppCompatActivity()
             val savedRecyclerViewGridItems: ApiNetworkResponse? = savedInstanceState.getParcelable(SEARCH_LIST_PARCEL_KEY)
             (recyclerView.adapter as YogaPoseAdapter).yogaPoseList = savedRecyclerViewGridItems?.yogaPoseList
         }
+    }
+
+    override fun setTitle(title: CharSequence?)
+    {
+        super.setTitle(title)
+        supportActionBar?.title = "Yoga Routine App"
     }
 
     override fun onSaveInstanceState(outState: Bundle)
@@ -87,12 +106,13 @@ class MainActivity : AppCompatActivity()
 
     fun calculateNoOfColumns(): Int
     {
-        var metrics = DisplayMetrics();
+        var metrics = DisplayMetrics()
+        val scalingFactor = 180
 
         windowManager.defaultDisplay.getMetrics(metrics)
-        var dpWidth = metrics.widthPixels / metrics.density;
-        var noOfColumns = dpWidth / 180;
-        return noOfColumns.roundToInt();
+        var dpWidth = metrics.widthPixels / metrics.density
+        var noOfColumns = dpWidth / scalingFactor
+        return noOfColumns.roundToInt()
     }
 
     /**
@@ -150,7 +170,6 @@ class MainActivity : AppCompatActivity()
         private const val LIST_STATE_KEY = "recycler_list_state"
         private const val SEARCH_LIST_PARCEL_KEY = "recycler_search_list_parcel"
         private const val LIST_PARCEL_KEY = "recycler_list_parcel"
-        private const val GRID_COLUMN_NUMBER = 3
         private const val USER_INPUT_TIME_DELAY = 1000
     }
 }

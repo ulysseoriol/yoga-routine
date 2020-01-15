@@ -1,8 +1,5 @@
 package com.example.ulysse.myoga;
 
-import androidx.cardview.widget.CardView;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.content.Intent;
 import android.net.Uri;
 import android.view.LayoutInflater;
@@ -12,10 +9,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.ulysse.myoga.Model.Pose;
 
 import java.util.List;
+
+import androidx.cardview.widget.CardView;
+import androidx.recyclerview.widget.RecyclerView;
+
 
 /**
  * Created by ulysse on 8/7/17.
@@ -26,6 +26,11 @@ public class YogaPoseAdapter extends RecyclerView.Adapter<YogaPoseAdapter.ViewHo
     private final String WEBSITE_BASE_URL = "http://www.yogajournal.com/pose/";
 
     private List<Pose> yogaPoseList;
+
+    public YogaPoseAdapter(List<Pose> yogaPoseList)
+    {
+        this.yogaPoseList = yogaPoseList;
+    }
 
     public List<Pose> getYogaPoseList()
     {
@@ -38,11 +43,6 @@ public class YogaPoseAdapter extends RecyclerView.Adapter<YogaPoseAdapter.ViewHo
         notifyDataSetChanged();
     }
 
-    public YogaPoseAdapter(List<Pose> yogaPoseList)
-    {
-        this.yogaPoseList = yogaPoseList;
-    }
-
     @Override
     public int getItemCount()
     {
@@ -52,7 +52,7 @@ public class YogaPoseAdapter extends RecyclerView.Adapter<YogaPoseAdapter.ViewHo
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType)
     {
-        final View view =  LayoutInflater.from(parent.getContext()).inflate(R.layout.gridview_item, parent, false);
+        final View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.gridview_item, parent, false);
         return new ViewHolder(view);
     }
 
@@ -64,25 +64,24 @@ public class YogaPoseAdapter extends RecyclerView.Adapter<YogaPoseAdapter.ViewHo
     }
 
 
-
     public class ViewHolder extends RecyclerView.ViewHolder
     {
-        private TextView simpleTextView;
-        private ImageView imageView;
-        private CardView cardView;
+        TextView poseTextView;
+        ImageView poseImageView;
+        CardView cardView;
 
         public ViewHolder(View view)
         {
             super(view);
-            this.simpleTextView = itemView.findViewById(R.id.poseName);
-            this.imageView = itemView.findViewById(R.id.poseImage);
+            this.poseTextView = itemView.findViewById(R.id.poseName);
+            this.poseImageView = itemView.findViewById(R.id.poseImage);
             this.cardView = itemView.findViewById(R.id.cardView);
         }
 
         public void bind(Pose pose)
         {
-            simpleTextView.setText(pose.getEnglishName());
-            Glide.with(imageView.getContext()).load(pose.getPoseImageUrl()).centerCrop().into(imageView);
+            poseTextView.setText(pose.getEnglishName());
+            Glide.with(poseImageView.getContext()).load(pose.getPoseImageUrl()).centerCrop().into(poseImageView);
             cardView.setOnClickListener((View view) ->
             {
                 String poseName = pose.getEnglishName().toLowerCase();
@@ -91,6 +90,7 @@ public class YogaPoseAdapter extends RecyclerView.Adapter<YogaPoseAdapter.ViewHo
                 Intent loadUrlIntent = new Intent(Intent.ACTION_VIEW);
                 loadUrlIntent.setData(Uri.parse(poseName));
                 view.getContext().startActivity(loadUrlIntent);
+
             });
 
         }
